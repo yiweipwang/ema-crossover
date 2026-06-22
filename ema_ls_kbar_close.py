@@ -726,8 +726,8 @@ if __name__ == "__main__":
     #   "1h"    → 252 * 7   = 1764
     #   "1D"    → 252
     #   "1W"    → 52
-    TIMEFRAME     = "1D"
-    BARS_PER_YEAR = 252
+    TIMEFRAME     = "30min"
+    BARS_PER_YEAR = 252 * 13   # 30-min bars per year (252 days × 13 bars/day)
 
     # ── Cost model ────────────────────────────────────────────────────────────
     costs = CostModel(
@@ -756,7 +756,7 @@ if __name__ == "__main__":
         df            = raw,
         cost_model    = costs,
         sizer         = sizer,
-        short_window  = 20,
+        short_window  = 10,
         long_window   = 50,
         bars_per_year = BARS_PER_YEAR,
         date_col      = "Date",

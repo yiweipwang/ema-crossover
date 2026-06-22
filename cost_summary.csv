@@ -1,2 +1,2 @@
 slippage_per_fill_$,commission_per_fill_$,round_trip_total_$,num_trades,total_slippage_$,total_commission_$,total_cost_all_trades_$,avg_cost_per_trade_$,cost_drag_pct
-0.01,0.005,0.03,46,0.92,0.46,1.38,0.03,0.7483
+0.01,0.005,0.03,733,14.66,7.33,21.99,0.03,10.9044
