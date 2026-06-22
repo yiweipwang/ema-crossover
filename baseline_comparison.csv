@@ -1,0 +1,11 @@
+metric,strategy_gross,strategy_net,buy_and_hold,gross_vs_bh
+Total return (%),20.4636,19.7153,639.4942,-619.0306
+Annualised return (%),1.9551,1.8891,23.1317,-21.1766
+Sharpe ratio,0.2923,0.2836,0.8569,-0.5646
+Max drawdown (%),-10.9678,-11.065,-38.5732,27.6054
+Number of trades,46.0,46.0,—,—
+Win rate (%),41.3,41.3,—,—
+Avg profit / trade ($),1.196087,1.166087,—,—
+Avg holding time (min),109940.9,109940.9,—,—
+Avg position size (%),23.06,23.06,—,—
+Exposure (%),98.05,98.05,—,—
