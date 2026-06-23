@@ -89,7 +89,7 @@ Baseline comparison
 ═══════════════════════════════════════════════════════════════════
   Buy-and-hold over the same window (first entry → last exit).
   Comparable metrics: total return, annualised return,
-  Sharpe, max drawdown.
+  Sharpe, Sortino, max drawdown.
 """
 
 import sys
@@ -284,9 +284,12 @@ def compute_strategy_metrics(book: pd.DataFrame, data: pd.DataFrame,
     total_return = equity.iloc[-1] - 1
     ann_ret      = (1 + total_return) ** (1 / years) - 1
 
-    tpy    = n / max(years, 1e-9)
-    std_r  = r_cap.std(ddof=1)
-    sharpe = (r_cap.mean() / std_r) * np.sqrt(tpy) if std_r > 0 else None
+    tpy       = n / max(years, 1e-9)
+    std_r     = r_cap.std(ddof=1)
+    sharpe    = (r_cap.mean() / std_r) * np.sqrt(tpy) if std_r > 0 else None
+    downside  = r_cap[r_cap < 0]
+    dd_std    = downside.std(ddof=1) if len(downside) > 1 else None
+    sortino   = (r_cap.mean() / dd_std) * np.sqrt(tpy) if dd_std and dd_std > 0 else None
     max_dd = ((equity - equity.cummax()) / equity.cummax()).min()
 
     return {
@@ -294,6 +297,7 @@ def compute_strategy_metrics(book: pd.DataFrame, data: pd.DataFrame,
         "total_return_pct":       round(total_return * 100, 4),
         "annualized_return_pct":  round(ann_ret * 100, 4),
         "sharpe_ratio":           round(sharpe, 4) if sharpe is not None else None,
+        "sortino_ratio":          round(sortino, 4) if sortino is not None else None,
         "max_drawdown_pct":       round(max_dd * 100, 4),
         "win_rate_pct":           round((book[pct_col] > 0).sum() / n * 100, 2),
         "avg_profit_per_trade":   round(book[profit_col].mean(), 6),
@@ -327,6 +331,10 @@ def compute_bh_metrics(data: pd.DataFrame, book: pd.DataFrame,
     bar_rets   = prices.pct_change().dropna()
     bh_sharpe  = (bar_rets.mean() / bar_rets.std(ddof=1)) * np.sqrt(bars_per_year) \
                  if bar_rets.std(ddof=1) > 0 else None
+    bh_downside = bar_rets[bar_rets < 0]
+    bh_dd_std   = bh_downside.std(ddof=1) if len(bh_downside) > 1 else None
+    bh_sortino  = (bar_rets.mean() / bh_dd_std) * np.sqrt(bars_per_year) \
+                  if bh_dd_std and bh_dd_std > 0 else None
     equity     = (1 + bar_rets).cumprod()
     bh_maxdd   = ((equity - equity.cummax()) / equity.cummax()).min()
 
@@ -334,6 +342,7 @@ def compute_bh_metrics(data: pd.DataFrame, book: pd.DataFrame,
         "total_return_pct":       round(bh_return * 100, 4),
         "annualized_return_pct":  round(bh_ann_ret * 100, 4),
         "sharpe_ratio":           round(bh_sharpe, 4) if bh_sharpe is not None else None,
+        "sortino_ratio":          round(bh_sortino, 4) if bh_sortino is not None else None,
         "max_drawdown_pct":       round(bh_maxdd * 100, 4),
     }
 
@@ -636,6 +645,7 @@ def run_ema_crossover(
         "total_return_pct":      "Total return (%)",
         "annualized_return_pct": "Annualised return (%)",
         "sharpe_ratio":          "Sharpe ratio",
+        "sortino_ratio":         "Sortino ratio",
         "max_drawdown_pct":      "Max drawdown (%)",
     }
     strategy_only = {
@@ -726,8 +736,8 @@ if __name__ == "__main__":
     #   "1h"    → 252 * 7   = 1764
     #   "1D"    → 252
     #   "1W"    → 52
-    TIMEFRAME     = "30min"
-    BARS_PER_YEAR = 252 * 13   # 30-min bars per year (252 days × 13 bars/day)
+    TIMEFRAME     = "15min"
+    BARS_PER_YEAR = 252 * 26   # 15-min bars per year (252 days × 26 bars/day)
 
     # ── Cost model ────────────────────────────────────────────────────────────
     costs = CostModel(
@@ -756,8 +766,8 @@ if __name__ == "__main__":
         df            = raw,
         cost_model    = costs,
         sizer         = sizer,
-        short_window  = 10,
-        long_window   = 50,
+        short_window  = 30,
+        long_window   = 60,
         bars_per_year = BARS_PER_YEAR,
         date_col      = "Date",
         time_col      = "Time",

@@ -1,2 +1,2 @@
-num_trades,total_return_pct,annualized_return_pct,sharpe_ratio,max_drawdown_pct,win_rate_pct,avg_profit_per_trade,avg_holding_minutes,avg_position_size_pct,exposure_pct,short_window,long_window
-733,21.9354,2.0083,1.0317,-2.5427,54.43,0.106453,258.7,24.18,15.86,10,50
+num_trades,total_return_pct,annualized_return_pct,sharpe_ratio,sortino_ratio,max_drawdown_pct,win_rate_pct,avg_profit_per_trade,avg_holding_minutes,avg_position_size_pct,exposure_pct,short_window,long_window
+798,27.7436,2.4853,1.3809,2.3676,-1.9084,54.26,0.127607,249.1,22.24,17.84,30,60

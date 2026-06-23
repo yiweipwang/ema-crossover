@@ -1,10 +1,10 @@
 # EMA Crossover Momentum Strategy
 
-Long/short EMA(10)/EMA(50) crossover backtested on 10 years of 1-minute intraday AAPL data
-resampled to 30-minute bars. Includes a full transaction cost model, fractional position
+Long/short EMA(30)/EMA(60) crossover backtested on 10 years of 1-minute intraday AAPL data
+resampled to 15-minute bars. Includes a full transaction cost model, fractional position
 sizing, and a decoupled visualization suite.
 
-Parameters selected via grid search across 8 EMA pairs × 5 timeframes (40 combinations).
+Parameters selected via grid search across 10 EMA pairs × 2 timeframes (20 combinations).
 
 ## Files
 
@@ -20,7 +20,7 @@ Parameters selected via grid search across 8 EMA pairs × 5 timeframes (40 combi
 ## Data
 
 Supply a CSV with columns `[Date, Time, open, high, low, close, volume]` at 1-minute resolution.
-The strategy resamples to the target timeframe (default: 30-minute bars). Change `TIMEFRAME`
+The strategy resamples to the target timeframe (default: 15-minute bars). Change `TIMEFRAME`
 and `BARS_PER_YEAR` in `__main__` to switch:
 
 | Timeframe | `BARS_PER_YEAR` |
@@ -40,26 +40,27 @@ python ema_visualizer.py                    # reads CSVs, produces charts
 
 ## Strategy summary
 
-- **Signal:** EMA(10) / EMA(50) crossover on 30-minute bars
+- **Signal:** EMA(30) / EMA(60) crossover on 15-minute bars
 - **Direction:** Long when fast > slow; short when slow > fast — always in market
 - **Position sizing:** Spread-magnitude fractional sizing (20%–100% of capital), percentile-ranked over a rolling 200-bar window — no look-ahead
 - **Market hours filter:** Signals only fire 09:30–16:00 ET; open positions force-closed at session end
 - **Cost model:** $0.01 slippage + $0.005 commission per fill ($0.03 round-trip)
 
-## Sample results (AAPL 10Y, 30-min bars, EMA 10/50)
+## Sample results (AAPL 10Y, 15-min bars, EMA 30/60)
 
-Grid search winner across 40 parameter combinations by Sharpe ratio.
+Grid search winner across 20 parameter combinations (10 EMA pairs × 2 timeframes) by Sharpe ratio.
 
 | Metric | Strategy (gross) | Buy-and-hold |
 |--------|-----------------|--------------|
-| Total return | 21.9% | 613.9% |
-| Annualised return | 2.01% | 21.78% |
-| **Sharpe ratio** | **1.03** | 0.84 |
-| Max drawdown | **−2.54%** | −38.84% |
-| Win rate | 54.4% | — |
-| Trades | 733 | — |
-| Cost drag (gross → net) | −10.9 pp | — |
+| Total return | 27.7% | 614.2% |
+| Annualised return | 2.49% | 21.79% |
+| **Sharpe ratio** | **1.38** | 0.84 |
+| **Sortino ratio** | **2.37** | 0.96 |
+| Max drawdown | **−1.91%** | −38.92% |
+| Win rate | 54.3% | — |
+| Trades | 798 | — |
+| Cost drag (gross → net) | −11.48 pp | — |
 
-The strategy's gross Sharpe of 1.03 exceeds buy-and-hold (0.84) while limiting max drawdown
-to 2.54% vs 38.8% — demonstrating the short leg's risk-reduction value even as it
-sacrifices absolute return on a secular growth stock.
+The strategy's gross Sharpe of 1.38 and Sortino of 2.37 both exceed buy-and-hold (0.84 and 0.96
+respectively) while limiting max drawdown to 1.91% vs 38.9% — demonstrating the short leg's
+risk-reduction value even as it sacrifices absolute return on a secular growth stock.
